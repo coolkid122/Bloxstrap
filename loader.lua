@@ -1,10 +1,9 @@
-if getgenv().whenbloxisntstrapping then return end
 repeat task.wait() until game:IsLoaded()
+if getgenv().whenbloxisntstrapping then return end
 local exec, ver = identifyexecutor()
-if exec == 'Delta' and (ver:find('arm64') or ver:find('arm32')) then game.Players.LocalPlayer:Kick('Your executor doesn\'t support bloxstrap, We recommend using [krnl.cat] or other executors.') return end
-local cloneref = (table.find({'Xeno', 'Fluxus'}, identifyexecutor(), 1) or not cloneref) and function(ref)
+local cloneref = cloneref or function(ref)
     return ref
-end or cloneref :: (any)
+end
 --getgenv().developer = true
 getgenv().error = function(msg, lvl)
     appendfile('bloxstrap/logs/error.txt', `{msg}\n`)
@@ -12,9 +11,9 @@ getgenv().error = function(msg, lvl)
         task.spawn(getrenv().error, msg, lvl)
     end
 end
-getgenv().assert = function(a, b)
-    if not a then
-        error(b)
+getgenv().assert = function(statement, err)
+    if not statement then
+        error(err)
     end
 end
 if not isfolder('bloxstrap') or not isfolder('bloxstrap/logs') then
@@ -45,7 +44,10 @@ assert(setfflag, `Your executor ({identifyexecutor()}) doesn't have the required
 writefile('bloxstrap/logs/error.txt', '')
 
 if getconnections then
-    for i,v in getconnections(game:GetService('LogService').MessageOut) do
+    for i,v in getconnections(cloneref(game:GetService('LogService')).MessageOut) do
+        v:Disable()
+    end
+    for i,v in getconnections(cloneref(game:GetService('ScriptContext')).Error) do
         v:Disable()
     end
 end
