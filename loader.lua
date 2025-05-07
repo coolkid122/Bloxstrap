@@ -52,4 +52,10 @@ if getconnections then
     end
 end
 
+if not http then
+    getgenv().http = {request = request}
+end
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/new-qwertyui/bloxstrap/main/core/user-update.lua'))()
+
 return loadfile('bloxstrap/main.lua')()
