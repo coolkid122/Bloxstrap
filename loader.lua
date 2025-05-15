@@ -1,16 +1,20 @@
 repeat task.wait() until game:IsLoaded()
 if getgenv().whenbloxisntstrapping then return end
-local exec, ver = identifyexecutor()
+local data = {...}
+data = data[1]
 local cloneref = cloneref or function(ref)
     return ref
 end
---getgenv().developer = true
 getgenv().error = function(msg, lvl)
     appendfile('bloxstrap/logs/error.txt', `{msg}\n`)
     if getgenv().developer then
         task.spawn(getrenv().error, msg, lvl)
     end
 end
+getgenv().rewindCommit = data.Rewind or 0
+getgenv().developer = data.Developer or false
+warn(developer)
+getgenv().noshow = data.HideMenu or false
 getgenv().assert = function(statement, err)
     if not statement then
         error(err)
@@ -43,7 +47,7 @@ end
 assert(setfflag, `Your executor ({identifyexecutor()}) doesn't have the required functions for this to work.`)
 writefile('bloxstrap/logs/error.txt', '')
 
-if getconnections then
+if getconnections and not developer then
     for i,v in getconnections(cloneref(game:GetService('LogService')).MessageOut) do
         v:Disable()
     end
@@ -51,11 +55,5 @@ if getconnections then
         v:Disable()
     end
 end
-
-if not http then
-    getgenv().http = {request = request}
-end
-
-loadstring(game:HttpGet('https://raw.githubusercontent.com/new-qwertyui/bloxstrap/main/core/user-update.lua'))()
 
 return loadfile('bloxstrap/main.lua')()
