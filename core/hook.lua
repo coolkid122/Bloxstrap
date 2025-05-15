@@ -612,6 +612,7 @@ function elements:addbutton(parent, pos, size, text)
 end
 
 function elements:notify(args)
+    if getgenv().noshow then return end
     local title = args.Title or args.title or 'Bloxstrap'
     local description = args.Description or args.Desc or args.desc or args.subtext
     local duration = args.duration or args.Duration or 7
