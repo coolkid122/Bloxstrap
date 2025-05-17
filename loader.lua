@@ -13,11 +13,24 @@ getgenv().error = function(msg, lvl)
 end
 getgenv().rewindCommit = data.Rewind or 0
 getgenv().developer = data.Developer or false
-warn(developer)
 getgenv().noshow = data.HideMenu or false
 getgenv().assert = function(statement, err)
     if not statement then
         error(err)
+    end
+end
+if isfolder('bloxstrap') and not isfile('reset') then
+    writefile('reset', 'gg')
+    if not getgenv().developer then
+        for i,v in listfiles('bloxstrap') do
+            if v ~= 'bloxstrap/logs' then
+                if table.find({'.lua', '.txt'}, v:sub(#v - 3, #v)) then
+                    delfile(v)
+                else
+                    delfolder(v)
+                end
+            end
+        end 
     end
 end
 if not isfolder('bloxstrap') or not isfolder('bloxstrap/logs') then
