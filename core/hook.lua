@@ -847,4 +847,9 @@ function elements:notify(args)
     end)
 end
 
+function elements:loadcfg(...)
+    self.configlib:loadconfig(...)
+    self.canRun = true
+end
+
 return elements
