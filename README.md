@@ -4,9 +4,8 @@ A script that attempts to recreate Bloxstrap, so you can use FFlags without inst
 ## Installation
 ```lua
 getgenv().autosetup = {
-    path = 'Bloxstrap', --> doesnt work rn
-    setup = true --> init after installaiton
+    path = 'Bloxstrap', -- doesnt work rn
+    setup = true -- init after installation
 }
-loadstring(game.HttpGet(game, 'https://raw.githubusercontent.com/coolkid122
-/Bloxstrap/Initiate.lua', true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/coolkid122/Bloxstrap/master/Initiate.lua", true))()
 ```
