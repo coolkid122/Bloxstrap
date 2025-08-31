@@ -8,9 +8,9 @@ local function getasync(url)
     return game:HttpGet(url, true)
 end
 
-local function safeSetFlag(n,v)
+local function safeSetFlag(name, value)
     pcall(function()
-        setfflag(n,tostring(v))
+        setfflag(name, tostring(value))
     end)
 end
 
@@ -20,8 +20,8 @@ local Flags = {
     DebugDisplayFPS = "true"
 }
 
-for n,v in pairs(Flags) do
-    safeSetFlag(n,v)
+for name, value in pairs(Flags) do
+    safeSetFlag(name, value)
 end
 
 if not isfolder("Bloxstrap") then
@@ -33,11 +33,9 @@ if not isfolder("Bloxstrap") then
     makefolder("Bloxstrap/Images")
 end
 
-local function install(config)
-    config = config or {}
-
+local function install()
     local mainFiles = httpservice:JSONDecode(getasync("https://api.github.com/repos/coolkid122/Bloxstrap/contents/"))
-    for i,v in pairs(mainFiles) do
+    for _,v in pairs(mainFiles) do
         if v.name:find(".lua") then
             writefile("Bloxstrap/"..v.name, "return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/"..v.name.."', true))()")
         elseif v.name:find(".mp3") or v.name:find(".png") then
@@ -48,7 +46,7 @@ local function install(config)
     writefile("Bloxstrap/Main/Bloxstrap.lua", "return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Bloxstrap.lua', true))()")
 
     local funcFiles = httpservice:JSONDecode(getasync("https://api.github.com/repos/coolkid122/Bloxstrap/contents/Main/Functions"))
-    for i,v in pairs(funcFiles) do
+    for _,v in pairs(funcFiles) do
         writefile("Bloxstrap/Main/Functions/"..v.name, "return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Functions/"..v.name.."', true))()")
     end
 
@@ -56,20 +54,17 @@ local function install(config)
 end
 
 if not isfolder("Bloxstrap") or #listfiles("Bloxstrap") <= 6 then
-    install({})
+    install()
 end
 
 local Bloxstrap
 local success, result = pcall(function()
-    Bloxstrap = loadfile("Bloxstrap/Main/Bloxstrap.lua")()
+    Bloxstrap = loadstring(game:HttpGet("https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Bloxstrap.lua", true))()
 end)
 
 if success and Bloxstrap then
-    if pcall(function() Bloxstrap.start() end) then
-        pcall(function() Bloxstrap.Visible(not hidegui) end)
-    else
-        warn("Failed to start Bloxstrap")
-    end
+    pcall(function() Bloxstrap.start() end)
+    pcall(function() Bloxstrap.Visible(not hidegui) end)
 else
-    warn("Failed to load Bloxstrap.lua")
+    warn("Failed to load Bloxstrap for mobile")
 end
