@@ -1,6 +1,6 @@
 if not isfile("Bloxstrap/FFlags.json") then writefile("Bloxstrap/FFlags.json", "[]") end
 local function loadFunction(func: string)
-return loadstring(game:HttpGet("https://raw.githubusercontent.com/qwertyui-is-back/Bloxstrap/refs/heads/main/Main/Functions/"..func..".lua"))()
+return loadstring(game:HttpGet("https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Functions/"..func..".lua"))()
 end
 local loadFunc = loadFunction
 local cloneref = cloneref or function(...) return ... end
