@@ -1,4 +1,3 @@
-
 local hidegui = getgenv().hideui or false
 local cloneref: () -> () = cloneref or function(...): (...any) -> (...any) return (...) end
 local httpservice = cloneref(game:GetService('HttpService'))
