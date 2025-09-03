@@ -1,6 +1,6 @@
 if not isfile("Bloxstrap/FFlags.json") then writefile("Bloxstrap/FFlags.json", "[]") end
-local function loadFunction(func: string)
-return loadstring(game:HttpGet("https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Functions/"..func..".lua"))()
+local function loadFunction(func: string) --> Automate the process of loading our functions
+return loadstring(game:HttpGet("https://raw.githubusercontent.com/qwertyui-is-back/Bloxstrap/refs/heads/main/Main/Functions/"..func..".lua"))()
 end
 local loadFunc = loadFunction
 local cloneref = cloneref or function(...) return ... end
@@ -18,10 +18,17 @@ local isfile: () -> () = isfile or function(file: string): (string) -> (boolean)
 return readfile(file) ~= nil and true or false;
 end;
 
+--[[if hookfunction then
+    hookfunction(lplr.Kick, function(...)
+        return
+    end)
+end]]
+
 getgenv().Bloxstrap = {}
     Bloxstrap.TouchEnabled = UserInputService.TouchEnabled
     Bloxstrap.Config = setmetatable({
     OofSound = false,
+    --> Engine Settings
     FPS = 120,
     AntiAliasingQuality = "Automatic",
     LightingTechnology = "Chosen by game",
@@ -29,7 +36,9 @@ getgenv().Bloxstrap = {}
     DisablePlayerShadows = false,
     DisablePostFX = false,
     DisableTerrainTextures = false,
+    --> Fast Flags: Unbannable
     GraySky = false,
+    --> Fast Flags: Bannable
     Desync = false,
     HitregFix = false,
     customfonttoggle = false,
@@ -51,7 +60,7 @@ Bloxstrap.UpdateConfig = function(obj: string, val: any)
 if not Bloxstrap.canUpdate then Bloxstrap.Config = conf return end
 Bloxstrap.Config[obj] = val
 end
-Bloxstrap.SaveConfig = function()
+Bloxstrap.SaveConfig = function() --> Saves the config
     return writefile("Bloxstrap/Main/Configs/Default.json", HttpService:JSONEncode(Bloxstrap.Config))
 end
 if isfile("Bloxstrap/Main/Configs/Default.json") then
@@ -73,9 +82,9 @@ Bloxstrap.success = notif
 
 Bloxstrap.info = notif
 
-Bloxstrap.ToggleFFlag = loadFunc("ToggleFFlag")
+Bloxstrap.ToggleFFlag = loadFunc("ToggleFFlag") --> Toggle FFlag function
 Bloxstrap.GetFFlag = loadFunc("GetFFlag")
-Bloxstrap.start = function(vis: boolean)
+Bloxstrap.start = function(vis: boolean) --> Start the script
 vis = vis or true
 
 if not vis then
@@ -84,15 +93,15 @@ if not vis then
 end
 
 getgenv().errorlog = getgenv().errorlog or "Bloxstrap/Logs/crashlog"..HttpService:GenerateGUID(false)..".txt"
-local GUI: table = loadfile('Bloxstrap/Main/Functions/GuiLibrary.lua')()
-local main: table? = GUI:MakeWindow({
+local GUI: table = loadfile('Bloxstrap/Main/Functions/GuiLibrary.lua')() --> Loading the library
+local main: table? = GUI:MakeWindow({ --> Create our main wibdo2
     Title = "Bloxstrap",
     SubTitle = "",
     SaveFolder = "Bloxstrap/Main/Configs"
 })
 main:Visible(vis)
 
-local Integrations: tab = main:MakeTab({"Integrations", "cross"})
+local Integrations: tab = main:MakeTab({"Integrations", "cross"}) --> Create our tab that will allow buttons and toggles
 local FastFlags: tab = main:MakeTab({"Mods", "wrench"})
 local EngineSettings: tab = main:MakeTab({"Engine Settings", "flag"})
 local Appearance: tab = main:MakeTab({"Appearance", "paintbrush-2"})
@@ -352,6 +361,7 @@ local customtopbar = Appearance:AddToggle({
                 table.insert(gradients, grad)
             end
         else
+            --imagelabel.Image = game:GetService("CoreGui").TopBarApp.MenuIconHolder.TriggerPoint.Background.ScalingIcon.Image
             pcall(function() woahwoah:Disconnect() end)
             for i,v in gradients do pcall(function() v:Destroy() end) end
         end
@@ -377,8 +387,10 @@ local rotatinghotbar = Appearance:AddToggle({
     end
 })
 
+--> Integrations
 local ActivityTracking: section = Integrations:AddSection("Activity Tracking")
 
+--> FastFlags
 local FFlagEditor: section = FastFlags:AddSection("Fast Flag Editor")
 local usefilepath = false
 local FFETextbox: textbox = FastFlags:AddTextBox({
@@ -494,10 +506,12 @@ usecustomfont = FastFlags:AddDropdown({
     Callback = function(val)
         local json = val:gsub('.ttf', '.json')
         if val == 'none' then
+            --pcall(delfile, json)
             currentcustomfont = nil
             return Bloxstrap.UpdateConfig('CustomFont', '')
         end
         Bloxstrap.UpdateConfig('CustomFont', val)
+        --if not isfile(json) then
             writefile(json, HttpService:JSONEncode({name = 'font', faces = {
                 {
                     name = 'Regular',
@@ -506,6 +520,7 @@ usecustomfont = FastFlags:AddDropdown({
                     assetId = getcustomasset(val)
                 }
             }}))
+        --end
           currentcustomfont = Font.new(getcustomasset(json), Enum.FontWeight.Regular)
           if Bloxstrap.Config.customfonttoggle then
             fontchanger:Toggle(false)
@@ -569,6 +584,7 @@ local HitregFix: toggle = FastFlags:AddToggle({
     end
 })
 
+--> Engine Settings
 local Presets: section = EngineSettings:AddSection("Presets")
 
 local deathsoundConnection;
@@ -588,7 +604,7 @@ local addcon = function()
     if not lplr.Character:FindFirstChild('Humanoid') then
         repeat task.wait() until lplr.Character:FindFirstChild('Humanoid')
     end
-    repeat task.wait() until humanoid.Parent != nil
+    repeat task.wait() until humanoid.Parent ~= nil
     deathsoundConnection = humanoid.HealthChanged:Connect(function()
         if humanoid.Health <= 0 then
             game:GetService("Players").LocalPlayer.PlayerScripts.RbxCharacterSounds.Enabled = false
@@ -701,6 +717,9 @@ EngineSettings:AddToggle({
     end
 })
 
+--local usingVoxel = Bloxstrap.GetFFlag("DFFlagDebugRenderForceTechnologyVoxel")
+--local usingShadowMap = Bloxstrap.GetFFlag("DFFlagDebugRenderForceFutureIsBrightPhase2")
+--local usingFuture = Bloxstrap.GetFFlag("DFFlagDebugRenderForceFutureIsBrightPhase3")
 local function changeLighting(lighting: string)
     sethiddenproperty(game.Lighting, "Technology", lighting:find("Voxel") and "Voxel" or lighting:find("Shadow Map") and "ShadowMap" or "Future")
     if not UserInputService.TouchEnabled then
@@ -786,6 +805,7 @@ local TextureQuality: dropdown = EngineSettings:AddDropdown({
     end
 })
 
+--> End
 Bloxstrap.canUpdate = true
 pcall(function()
 local button = Instance.new('TextButton', game:GetService('CoreGui').TopBarApp.UnibarLeftFrame)
