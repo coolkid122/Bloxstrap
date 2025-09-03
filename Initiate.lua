@@ -1,52 +1,37 @@
 
 local hidegui = getgenv().hideui or false
-local Players = game:GetService("Players")
-local CoreGui = game:GetService("CoreGui")
-local player = Players.LocalPlayer or Players.PlayerAdded:Wait()
+local cloneref: () -> () = cloneref or function(...): (...any) -> (...any) return (...) end
+local httpservice = cloneref(game:GetService('HttpService'))
+local getasync: () -> () = function(string: string): (string) -> (string)
+    return game:HttpGet(string, true)
+end
+makefolder('Bloxstrap');
+makefolder('Bloxstrap/Main');
+    makefolder('Bloxstrap/Main/Functions');
+    makefolder('Bloxstrap/Main/Configs');
+    makefolder('Bloxstrap/Main/Fonts')
+    makefolder('Bloxstrap/Images')
+local install: () -> () = function(config: {path: string, setup: boolean}): (table) -> ()
+    config = config or {}
+    
+    for i: number, v: table in httpservice:JSONDecode(getasync('https://api.github.com/repos/coolkid122/Bloxstrap/contents/')) do
+        if v.name:find('.lua') then
+            writefile(`Bloxstrap/{v.name}`, `return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/{v.name}', true))()`);
+        elseif v.name:find('.mp3') or v.name:find('.png') then
+            writefile(`Bloxstrap/{v.name}`, game:HttpGet(`https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/{v.name}`));
+        end;
+    end;
+    writefile(`Bloxstrap/Main/Bloxstrap.lua`, `return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Bloxstrap.lua', true))()`);
+    for i: number, v: table in httpservice:JSONDecode(getasync('https://api.github.com/repos/coolkid122/Bloxstrap/contents/Main/Functions')) do
+        writefile(`Bloxstrap/Main/Functions/{v.name}`, `return loadstring(game:HttpGet('https://raw.githubusercontent.com/coolkid122/Bloxstrap/refs/heads/main/Main/Functions/{v.name}', true))()`);
+    end;
+    writefile("Bloxstrap/Main/Configs/Default.json", "{}")
+end;
 
-if not isfolder("Bloxstrap") then
-    makefolder("Bloxstrap")
-    makefolder("Bloxstrap/Main")
-    makefolder("Bloxstrap/Main/Functions")
-    makefolder("Bloxstrap/Main/Configs")
-    makefolder("Bloxstrap/Main/Fonts")
-    makefolder("Bloxstrap/Images")
+if (not isfolder('Bloxstrap') or #listfiles('Bloxstrap') <= 6) then
+    install({})
 end
 
-local function getasync(url)
-    return game:HttpGet(url, true)
-end
-
-local function install()
-    local files = game:GetService("HttpService"):JSONDecode(getasync("https://api.github.com/repos/coolkid122/Bloxstrap/contents/"))
-    for _,v in pairs(files) do
-        if v.name:find(".lua") or v.name:find(".mp3") or v.name:find(".png") then
-            pcall(function() getasync("https://raw.githubusercontent.com/coolkid122/Bloxstrap/main/"..v.name) end)
-        end
-    end
-end
-
-if not isfolder("Bloxstrap") or #listfiles("Bloxstrap") <= 6 then
-    install()
-end
-
-local success, Bloxstrap = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/coolkid122/Bloxstrap/main/Main/Bloxstrap.lua", true))()
-end)
-
-if success and Bloxstrap then
-    pcall(function() Bloxstrap.start() end)
-    task.defer(function()
-        pcall(function()
-            Bloxstrap.Visible(true)
-            for _, gui in pairs(Bloxstrap:GetGuiObjects()) do
-                if gui:IsA("ScreenGui") then
-                    gui.Parent = CoreGui
-                    gui.Enabled = true
-                    gui.ResetOnSpawn = false
-                    gui.IgnoreGuiInset = true
-                end
-            end
-        end)
-    end)
-end
+local Bloxstrap: table = loadfile('Bloxstrap/Main/Bloxstrap.lua')()
+Bloxstrap.start() 
+Bloxstrap.Visible(not hidegui)
